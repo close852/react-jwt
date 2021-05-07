@@ -1,6 +1,8 @@
 const path = require("path");
 const webpack = require("webpack");
 const RefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+const CleanTerminalPlugin = require("clean-terminal-webpack-plugin");
+
 //https://webpack.js.org/concepts/
 module.exports = {
     name: "default-setting",
@@ -49,6 +51,8 @@ module.exports = {
         new webpack.LoaderOptionsPlugin({ debug: true }),
         //* build할 때 플러그인 주석필요.
         new RefreshWebpackPlugin(),
+        new CleanTerminalPlugin(),
+
         //*/
     ],
     output: {
