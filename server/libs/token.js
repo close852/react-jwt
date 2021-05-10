@@ -1,14 +1,15 @@
 const secretKey = process.env.JWT_SECRET || 'ccc';
 import jwt from 'jsonwebtoken';
 
-export default function generateToken(payload) {
+function generateToken(payload) {
     return new Promise(
         (resolve, reject) => {
             jwt.sign(
                 payload,
                 secretKey,
                 {
-                    expiresIn: '7d'
+                    expiresIn: '10d',
+                    subject:'userinfo'
                 }, (error, token) => {
                     if(error) reject(error);
                     resolve(token);
@@ -16,4 +17,19 @@ export default function generateToken(payload) {
             );
         }
     );
+}
+
+function checkToken(token, secret) {
+    return new Promise((resolve, reject)=>{
+        jwt.verify(token, secret, (err, decoded)=> {
+            if(err) {
+                reject(err);
+            }
+            resolve(decoded)
+        })
+    });
+}
+export  {
+    generateToken,
+    checkToken
 }

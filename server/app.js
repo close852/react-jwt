@@ -1,6 +1,6 @@
 /* EXPRESS SERVER */
 import express from 'express'
-import bodyParser from 'body-parser'
+import bodyParser, { json } from 'body-parser'
 
 /* LOGGER */
 // import logger from 'morgan';
@@ -10,7 +10,7 @@ import bodyParser from 'body-parser'
 /* SESSION */
 import session from 'express-session';
 
-import generateToken from './libs/token';
+import {generateToken, checkToken} from './libs/token';
 
 /* ROUTER */
 import api from './routes'
@@ -41,17 +41,43 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.set('jwt-secret', 'asc978dsjhv$#')
 
 /*addRouter */
 app.use('/api', api);
-app.get('/', async (req,res)=>{
-    
-    const token = await generateToken({_id:'jiwoo'});
-    console.log('token >', token);
+app.get('/test/:name', async (req,res)=>{
+    const { name } = req.params;
+    const payload = {
+        _id : name,
+        name
+    }
+    console.log('payload > ', payload)
+    const token = await generateToken(payload);
+    console.log('token >', req.headers['x-access-token'], token);
 
     res.json({token})
 })
 
+app.get('/check/:name', async (req, res) => {
+    const secret = app.get('jwt-secret');
+    const token = req.headers['x-access-token'] || req.query.token;
+
+    checkToken(token, secret)
+    .then(decoded=>{
+        console.log('decoded > ', decoded)
+        res.json({decoded})
+    })
+    .catch(err =>{
+        console.log('err 34324>> ', err);
+        res.json({err})
+    });
+})
+
+app.get('delete/:name',  async (req, res) => {
+    const secret = app.get('jwt-secret');
+    const token = req.headers['x-access-token'] || req.query.token;
+
+})
 app.listen(PORT, (req, res) => {
     console.log(`http://127.0.0.1:${PORT} start!`)
 })
